@@ -36,6 +36,6 @@ out vec4 fragColor;
 void main( ) {
     vec4 source = texture(u_texture, vec3(v_texcoord, v_depth));
     float depth = floor(source.x * 255.0);
-    fragColor = texture(u_palette, vec3(0.0, 0.0, depth));
+    fragColor = texture(u_palette, vec3(0.0, 0.0, depth)) * v_color;
 }
 `
