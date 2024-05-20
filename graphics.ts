@@ -1,10 +1,10 @@
 import * as glMatrix from 'gl-matrix';
 import ShaderProgram from './programs/shaderprogram';
 import VAOGener from './vaogener';
-import generateColorShader from './programs/color/program.color';
-import { createBuffer, setTexture, setTextureArray, updateBuffer } from './graphics.utils';
-import generateTextureShader from './programs/texture/program.texture';
 import type { iModelObject } from './glib';
+import { createBuffer, setTexture, setTextureArray, updateBuffer } from './graphics.utils';
+import generateColorShader from './programs/color/program.color';
+import generateTextureShader from './programs/texture/program.texture';
 
 // global variables 
 const mat4 = glMatrix.mat4;
@@ -106,7 +106,7 @@ export default class Graphics {
         for( const model of models ) Graphics.updateTransforms( model );
         updateBuffer(gl, transformBuffer, transformVertex, 0);
         Graphics.shaders.texture.activate(gl);
-        Graphics.shaders.texture.render(projection, view, Graphics.textures[0], models.length);
+        Graphics.shaders.texture.render(projection, view, models.length);
     }
 
 }
