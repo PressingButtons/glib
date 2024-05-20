@@ -5,6 +5,7 @@ import type { iModelObject } from './glib';
 import { createBuffer, setTexture, setTextureArray, updateBuffer } from './graphics.utils';
 import generateColorShader from './programs/color/program.color';
 import generateTextureShader from './programs/texture/program.texture';
+import generatePaletteShader from './programs/palette/program.palette';
 
 // global variables 
 const mat4 = glMatrix.mat4;
@@ -60,6 +61,7 @@ export default class Graphics {
         transformBuffer = createBuffer(gl, transformVertex, gl.DYNAMIC_DRAW);
         Graphics.shaders.color = generateColorShader( gl, modelBuffer, transformBuffer );
         Graphics.shaders.texture = generateTextureShader( gl, modelBuffer, transformBuffer );
+        Graphics.shaders.palette = generatePaletteShader( gl, modelBuffer, transformBuffer );
     }
 
     private static updateTransforms( model:iModelObject ) {
@@ -80,12 +82,14 @@ export default class Graphics {
     }
 
     public static loadTexture( source: ImageData | HTMLImageElement, index: number = 0 ) {
+        gl.activeTexture( gl.TEXTURE0 + index );
         setTexture( gl, Graphics.textures[index], source );
     }
 
     public static loadTextureArray( source: ImageData | HTMLImageElement, index: number, size?:glMatrix.vec2 ) {
         if( !size ) size = [source.width, source.height];
         let slices = Math.floor(source.height / size[1] );
+        gl.activeTexture( gl.TEXTURE0 + index );
         setTextureArray( gl, Graphics.textures[index], source, size, slices );
     }
 
@@ -107,6 +111,13 @@ export default class Graphics {
         updateBuffer(gl, transformBuffer, transformVertex, 0);
         Graphics.shaders.texture.activate(gl);
         Graphics.shaders.texture.render(projection, view, models.length);
+    }
+
+    public static drawPalettedTextures( models: iModelObject[] ) {
+        for(const model of models) Graphics.updateTransforms( model );
+        updateBuffer(gl, transformBuffer, transformVertex, 0);
+        Graphics.shaders.palette.activate(gl);
+        Graphics.shaders.palette.render(projection, view, models.length);
     }
 
 }
